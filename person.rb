@@ -6,6 +6,7 @@ class Person
     @id = id
     @name = name
     @age = age
+    @parent_permission = parent_permission
   end
 
   def is_of_age?
