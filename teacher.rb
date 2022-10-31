@@ -1,4 +1,6 @@
-require_relative 'person'
+# frozen_string_literal: true
+
+require_relative 'Person'
 
 class Teacher < Person
   def initialize(specialization)
