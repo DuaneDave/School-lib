@@ -3,10 +3,10 @@ class Person
   attr_reader :id
 
   def initialize(name: 'Unknown', parent_permission: true, age)
-    @id =  Random.rand(1..100)
+    @id = Random.rand(1..100)
     @name = name
-    @age = age
     @parent_permission = parent_permission
+    @age = age
   end
 
   def can_use_services?
