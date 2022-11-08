@@ -8,6 +8,8 @@ require './persist'
 
 class App
   def initialize
+    @persist_people = Persist.new('person.json')
+    # @persist_books = Pe
     @books = []
     @persons = []
     @rentals = []
@@ -32,9 +34,10 @@ class App
   end
 
   def list_all_persons
-    puts 'Database is empty! Add a person.' if @persons.empty?
-    @persons.each do |person|
-      puts "[#{person.class.name}] Name: #{person.name}, Age: #{person.age}, id: #{person.id}"
+    people_list = @persist_people.load
+    puts 'Database is empty! Add a person.' if people_list.empty?
+    people_list.each_with_index do |person, i|
+      puts "[#{i}] Name: #{person["name"]}, Age: #{person["age"]}, id: #{person["id"]}"
     end
   end
 
@@ -65,7 +68,7 @@ class App
     student = Student.new(age, name, parent_permission)
     @persons << student
 
-    save = []
+    save = @persist_people.load
     @persons.each do |person|
       save << { name: person.name, id: person.id, age: person.age }
     end
@@ -86,7 +89,7 @@ class App
     teacher = Teacher.new(specialization, age, name)
     @persons << teacher
 
-    save = []
+    save = @persist_people.load
     @persons.each do |person|
       save << { name: person.name, id: person.id, age: person.age }
     end
