@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require './person'
 require './student'
 require './teacher'
@@ -9,7 +11,8 @@ require './persist'
 class App
   def initialize
     @persist_people = Persist.new('person.json')
-    # @persist_books = Pe
+    @persist_books = Persist.new('book.json')
+    @persist_rentals = Persist.new('rental.json')
     @books = []
     @persons = []
     @rentals = []
@@ -29,15 +32,16 @@ class App
   end
 
   def list_all_books
-    puts 'Database is empty! Add a book.' if @books.empty?
-    @books.each { |book| puts "[Book] Title: #{book.title}, Author: #{book.author}" }
+    books_list = @persist_books.load
+    puts 'Database is empty! Add a book.' if books_list.empty?
+    books_list.each_with_index { |book, i| puts "[Book #{i}] Title: #{book['title']}, Author: #{book['author']}" }
   end
 
   def list_all_persons
     people_list = @persist_people.load
     puts 'Database is empty! Add a person.' if people_list.empty?
     people_list.each_with_index do |person, i|
-      puts "[#{i}] Name: #{person["name"]}, Age: #{person["age"]}, id: #{person["id"]}"
+      puts "[#{i}] Name: #{person['name']}, Age: #{person['age']}, id: #{person['id']}"
     end
   end
 
@@ -99,7 +103,7 @@ class App
     puts 'Teacher created successfully'
   end
 
-  def create_book()
+  def create_book
     puts 'Create a new book'
     print 'Enter title: '
     title = gets.chomp
@@ -108,7 +112,7 @@ class App
     book = Book.new(title, author)
     @books.push(book)
 
-    save = []
+    save = @persist_books.load
     @books.each do |b|
       save << { title: b.title, author: b.author }
     end
@@ -120,26 +124,30 @@ class App
 
   def create_rental
     puts 'Select which book you want to rent by entering its number'
-    @books.each_with_index { |book, index| puts "#{index}) Title: #{book.title}, Author: #{book.author}" }
+
+    list_all_books
 
     book_id = gets.chomp.to_i
 
     puts 'Select a person from the list by its number'
-    @persons.each_with_index do |person, index|
-      puts "#{index}) [#{person.class.name}] Name: #{person.name}, ID: #{person.id}, Age: #{person.age}"
-    end
+
+    list_all_persons
 
     person_id = gets.chomp.to_i
 
     print 'Date: '
     date = gets.chomp.to_s
 
-    rental = Rental.new(date, @persons[person_id], @books[book_id])
+    rental = Rental.new(date, @persist_people.load[person_id], @persist_books.load[book_id])
     @rentals << rental
 
-    save = []
+    save = @persist_rentals.load
     @rentals.each do |rent|
-      save << { date: rent.date, book: rent.book, person: rent.person }
+      save << { date: rent.date, book: { title: rent.book['title'], author: rent.book['author'] }, person: {
+        id: rent.person['id'],
+        name: rent.person['name'],
+        age: rent.person['age']
+      } }
     end
     save_rental = Persist.new('rental.json')
     save_rental.save(save)
@@ -148,15 +156,14 @@ class App
   end
 
   def list_all_rentals
+    rentals_list = @persist_rentals.load
     puts 'To see person rentals enter the person ID: '
-    @persons.each do |person|
-      puts "id: #{person.id}"
-    end
+    list_all_persons
     id = gets.chomp.to_i
     puts 'Rented Books:'
-    @rentals.each do |rental|
-      if rental.person.id == id
-        puts "Peson: #{rental.person.name}  Date: #{rental.date}, Book: '#{rental.book.title}' by #{rental.book.author}"
+    rentals_list.each do |rental|
+      if rental['person']['id'] == id
+        puts "Person: #{rental['person']['name']}  Date: #{rental['date']}, Book: '#{rental['book']['title']}' by #{rental['book']['author']}"
       else
         puts
         puts 'No records where found for the given ID'
