@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require './person'
 require './student'
 require './teacher'
@@ -124,20 +122,13 @@ class App
 
   def create_rental
     puts 'Select which book you want to rent by entering its number'
-
     list_all_books
-
     book_id = gets.chomp.to_i
-
     puts 'Select a person from the list by its number'
-
     list_all_persons
-
     person_id = gets.chomp.to_i
-
     print 'Date: '
     date = gets.chomp.to_s
-
     rental = Rental.new(date, @persist_people.load[person_id], @persist_books.load[book_id])
     @rentals << rental
 
@@ -151,10 +142,10 @@ class App
     end
     save_rental = Persist.new('rental.json')
     save_rental.save(save)
-
     puts 'Rental created successfully'
   end
 
+  # rubocop:disable Metrics/MethodLength
   def list_all_rentals
     rentals_list = @persist_rentals.load
     puts 'To see person rentals enter the person ID: '
@@ -162,12 +153,14 @@ class App
     id = gets.chomp.to_i
     puts 'Rented Books:'
     rentals_list.each do |rental|
+      # rubocop:disable Layout/LineLength
       if rental['person']['id'] == id
         puts "Person: #{rental['person']['name']}  Date: #{rental['date']}, Book: '#{rental['book']['title']}' by #{rental['book']['author']}"
       else
-        puts
         puts 'No records where found for the given ID'
       end
+      # rubocop:enable Layout/LineLength
     end
   end
+  # rubocop:enable Metrics/MethodLength
 end
