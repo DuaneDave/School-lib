@@ -120,6 +120,7 @@ class App
     puts "Book #{title} created successfully."
   end
 
+  # rubocop:disable Metrics/MethodLength
   def create_rental
     puts 'Select which book you want to rent by entering its number'
     list_all_books
@@ -144,6 +145,7 @@ class App
     save_rental.save(save)
     puts 'Rental created successfully'
   end
+  # rubocop:enable Metrics/MethodLength
 
   def list_all_rentals
     rentals_list = @persist_rentals.load
