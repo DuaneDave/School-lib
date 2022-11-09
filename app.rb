@@ -145,7 +145,6 @@ class App
     puts 'Rental created successfully'
   end
 
-  # rubocop:disable Metrics/MethodLength
   def list_all_rentals
     rentals_list = @persist_rentals.load
     puts 'To see person rentals enter the person ID: '
@@ -162,5 +161,4 @@ class App
       # rubocop:enable Layout/LineLength
     end
   end
-  # rubocop:enable Metrics/MethodLength
 end
